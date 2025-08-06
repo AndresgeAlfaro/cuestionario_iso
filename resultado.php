@@ -3,50 +3,61 @@
 <html>
 <head>
     <title>Resultados</title>
-    <style>
-        .categoria { margin-top: 20px; }
-        .semaforo { font-size: 20px; font-weight: bold; }
-        .rojo { color: red; }
-        .amarillo { color: orange; }
-        .verde { color: green; }
-    </style>
+    <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-    <h2>Resultado del Cuestionario</h2>
+    <div class="container">
+        <h2>Resultado del Cuestionario</h2>
 
-    <?php
-    $totales = ['si' => 0, 'no' => 0, 'no_implementa' => 0];
-    $resultado_categoria = [];
+        <?php
+        $totales = ['si' => 0, 'no' => 0, 'no_implementa' => 0];
+        $resultado_categoria = [];
+        $categoriasRespondidas = [];
 
-    foreach ($cuestionario as $categoria => $preguntas) {
-        $res = ['si' => 0, 'no' => 0, 'no_implementa' => 0];
-        foreach ($preguntas as $index => $p) {
-            $valor = $_POST[$categoria . '_' . $index];
-            $res[$valor]++;
-            $totales[$valor]++;
+        foreach ($cuestionario as $categoria => $preguntas) {
+            $res = ['si' => 0, 'no' => 0, 'no_implementa' => 0];
+            $respondidas = false;
+
+            foreach ($preguntas as $index => $p) {
+                $key = $categoria . '_' . $index;
+                if (isset($_POST[$key])) {
+                    $valor = $_POST[$key];
+                    $res[$valor]++;
+                    $totales[$valor]++;
+                    $respondidas = true;
+                }
+            }
+
+            if ($respondidas) {
+                $resultado_categoria[$categoria] = $res;
+                $categoriasRespondidas[] = $categoria;
+            }
         }
-        $resultado_categoria[$categoria] = $res;
-    }
 
-    function obtenerSemaforo($respuestas, $total) {
-        $si = $respuestas['si'];
-        $porcentaje = ($si / $total) * 100;
-        if ($porcentaje >= 70) return 'verde';
-        elseif ($porcentaje >= 40) return 'amarillo';
-        else return 'rojo';
-    }
+        function obtenerSemaforo($respuestas, $total) {
+            $si = $respuestas['si'];
+            $porcentaje = ($si / $total) * 100;
+            if ($porcentaje >= 70) return 'verde';
+            elseif ($porcentaje >= 40) return 'amarillo';
+            else return 'rojo';
+        }
 
-    foreach ($resultado_categoria as $cat => $res) {
-        $total = array_sum($res);
-        $color = obtenerSemaforo($res, $total);
-        echo "<div class='categoria'><strong>$cat:</strong> ";
-        echo "<span class='semaforo $color'>" . strtoupper($color) . "</span></div>";
-    }
+        if (empty($resultado_categoria)) {
+            echo "<p class='error'>No se respondió ninguna pregunta. Por favor, selecciona al menos una categoría y responde sus preguntas.</p>";
+        } else {
+            foreach ($resultado_categoria as $cat => $res) {
+                $total = array_sum($res);
+                $color = obtenerSemaforo($res, $total);
+                echo "<div class='categoria'><strong>$cat:</strong> ";
+                echo "<span class='semaforo $color'>" . strtoupper($color) . "</span></div>";
+            }
 
-    // Semáforo general
-    $total_general = array_sum($totales);
-    $color_general = obtenerSemaforo($totales, $total_general);
-    echo "<hr><h3>Resultado General: <span class='semaforo $color_general'>" . strtoupper($color_general) . "</span></h3>";
-    ?>
+            // Semáforo general
+            $total_general = array_sum($totales);
+            $color_general = obtenerSemaforo($totales, $total_general);
+            echo "<hr><h3>Resultado General: <span class='semaforo $color_general'>" . strtoupper($color_general) . "</span></h3>";
+        }
+        ?>
+    </div>
 </body>
 </html>
