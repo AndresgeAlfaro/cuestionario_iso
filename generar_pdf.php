@@ -1,7 +1,16 @@
 <?php
-require_once('vendor/autoload.php'); // Asegúrate de tener installed Dompdf
-
+// archivo: generar_pdf.php
+require_once('vendor/autoload.php');
 use Dompdf\Dompdf;
+
+function colorHex($color) {
+    return match ($color) {
+        'verde' => 'green',
+        'amarillo' => 'orange',
+        'rojo' => 'red',
+        default => 'black',
+    };
+}
 
 $fecha = $_GET['fecha'] ?? date('Y-m-d H:i:s');
 $norma = $_GET['norma'] ?? 'No especificada';
@@ -14,17 +23,8 @@ $dompdf->loadHtml("
     <p><strong>Norma Seleccionada:</strong> $norma</p>
     <p><strong>Resultado General:</strong> <span style='color: " . colorHex($resultado) . "; font-weight:bold;'>●</span></p>
 ");
-
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 $dompdf->stream("reporte_$fecha.pdf", ["Attachment" => false]);
-
-function colorHex($color) {
-    return match ($color) {
-        'verde' => 'green',
-        'amarillo' => 'orange',
-        'rojo' => 'red',
-        default => 'black',
-    };
-}
 ?>
+

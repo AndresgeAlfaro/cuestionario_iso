@@ -1,2 +1,1 @@
-2025-08-06 22:15:12 | Norma: ISO | Resultado General: verde
-2025-08-06 22:15:33 | Norma: COBIT 4.1 | Resultado General: verde
+2025-08-07 03:45:28 | Usuario: usuario1 | Norma: ISO | Resultado General: verde
